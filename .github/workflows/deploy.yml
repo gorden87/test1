@@ -1,4 +1,4 @@
-name: Deploy to Nginx
+name: CI/CD with Docker, Nginx and SSH Deploy
 
 on:
   push:
@@ -6,49 +6,46 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      - name: Build Docker image
+        run: |
+          docker build -t my-static-site .
 
-      - name: Install dependencies
-        run: npm install
+      - name: Save Docker image to file
+        run: |
+          docker save my-static-site > my-static-site.tar
 
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASS }} # или использовать ключ
-          port: 22
-          script: |
-            mkdir -p /var/www/my-app
-            rm -rf /var/www/my-app/*
-            exit
-      - name: Copy files
+      - name: Copy image to server via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASS }}
           port: 22
-          source: "dist/*"
-          target: "/var/www/my-app/"
+          source: "my-static-site.tar"
+          target: "/home/${{ secrets.SSH_USER }}/deploy/"
 
-      - name: Reload Nginx
+      - name: Deploy on server via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASS }}
+          port: 22
           script: |
-            sudo systemctl reload nginx
+            # Опционально: удаляем предыдущий образ
+            docker stop my-site || true
+            docker rm my-site || true
+            docker rmi my-static-site || true
+
+            # Загружаем новый образ
+            docker load -i /home/${{ secrets.SSH_USER }}/deploy/my-static-site.tar
+
+            # Запускаем контейнер
+            docker run -d --name my-site -p 80:80 my-static-site
