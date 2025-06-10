@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>CI/CD Example App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Время в разных часовых поясах</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Добро пожаловать в CI/CD пример!</h1>
-  <p id="timestamp">Загрузка...</p>
-  <button onclick="updateTime()">Обновить время</button>
+  <h1>🌍 Текущее время в разных городах</h1>
+  <div id="time-container">
+    <div class="time-card" data-tz="Europe/Moscow">🕒 Москва: <span></span></div>
+    <div class="time-card" data-tz="America/New_York">🕒 Нью-Йорк: <span></span></div>
+    <div class="time-card" data-tz="Asia/Tokyo">🕒 Токио: <span></span></div>
+    <div class="time-card" data-tz="Australia/Sydney">🕒 Сидней: <span></span></div>
+  </div>
 
   <script src="script.js"></script>
 </body>
