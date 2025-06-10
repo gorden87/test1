@@ -1,31 +1,27 @@
-// Список временных зон
-const timeZones = [
-  { element: document.querySelector('[data-tz="Europe/Moscow"] span'], tz: "Europe/Moscow" },
-  { element: document.querySelector('[data-tz="America/New_York"] span'), tz: "America/New_York" },
-  { element: document.querySelector('[data-tz="Asia/Tokyo"] span'), tz: "Asia/Tokyo" },
-  { element: document.querySelector('[data-tz="Australia/Sydney"] span'), tz: "Australia/Sydney" }
-];
+document.addEventListener("DOMContentLoaded", function () {
+  const timeElements = document.querySelectorAll(".time-card span");
+  const timeZones = [
+    "Europe/Moscow",
+    "America/New_York",
+    "Asia/Tokyo",
+    "Australia/Sydney"
+  ];
 
-// Функция для форматирования даты под нужный часовой пояс
-function formatTime(date, timeZone) {
-  const options = {
-    timeZone: timeZone,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  };
-  return new Intl.DateTimeFormat('ru-RU', options).format(date);
-}
+  function updateTime() {
+    const now = new Date();
+    timeElements.forEach((el, index) => {
+      const tz = timeZones[index];
+      const formatter = new Intl.DateTimeFormat('ru-RU', {
+        timeZone: tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      el.textContent = formatter.format(now);
+    });
+  }
 
-// Обновление времени
-function updateTime() {
-  const now = new Date();
-  timeZones.forEach(tzObj => {
-    tzObj.element.textContent = formatTime(now, tzObj.tz);
-  });
-}
-
-// Запускаем сразу и обновляем каждую секунду
-updateTime();
-setInterval(updateTime, 1000);
+  updateTime();
+  setInterval(updateTime, 1000);
+});
