@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "Europe/Moscow",
     "America/New_York",
     "Asia/Tokyo",
-    "Australia/Sydney"
+    "Australia/Sydney",
+    "Asia/Tomsk"
   ];
 
   function updateTime() {
