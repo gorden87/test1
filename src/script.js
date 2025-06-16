@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "America/New_York",
     "Asia/Tokyo",
     "Australia/Sydney",
+    "Asia/Tomsk",
     "Asia/Tomsk"
   ];
 
